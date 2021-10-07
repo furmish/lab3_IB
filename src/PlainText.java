@@ -19,11 +19,11 @@ public class PlainText implements FeistelCipher {
         int beginIndex = 0;
         /*цикл для получение подстрок, которые делятся на левую и правую части,
         передаем left и right в метод @encryptText(left, right), который вернет нам объедененный массив из зашифрованных left и right*/
-        for (int i = RESHUFFLE.length * 2 - 1; i < plainText.length(); i += RESHUFFLE.length * 2) {
+        for (int endIndex = RESHUFFLE.length * 2 - 1; endIndex < plainText.length(); endIndex += RESHUFFLE.length * 2) {
             int[] left = plainText.substring(beginIndex, beginIndex + RESHUFFLE.length).codePoints().toArray();
-            int[] right = plainText.substring(beginIndex + RESHUFFLE.length, i + 1).codePoints().toArray();
+            int[] right = plainText.substring(beginIndex + RESHUFFLE.length, endIndex + 1).codePoints().toArray();
             Arrays.stream(encryptText(left, right)).forEach(value -> sb.append((char) value));
-            beginIndex = i + 1;
+            beginIndex = endIndex + 1;
         }
         return sb.toString();
     }
