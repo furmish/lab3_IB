@@ -1,48 +1,40 @@
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class CipherText implements FeistelCipher {
-    private final String cipherText;
+    private String cipherText;
 
     public CipherText(String cipherText) {
         this.cipherText = cipherText;
     }
-/*@decryptText() */
+
+    /*@decryptText() дешифрует каждый блок из n символов в строке по порядку, где n - кол-во перестановок * 2 */
     public String decryptText() {
         StringBuilder sb = new StringBuilder();
         int beginIndex = 0;
-        for (int i = RESHUFFLE.length * 2 - 1; i < cipherText.length(); i += RESHUFFLE.length * 2) {
-            int[] left = cipherText.substring(beginIndex, beginIndex + RESHUFFLE.length).codePoints().toArray();
-            int[] right = cipherText.substring(beginIndex + RESHUFFLE.length, i + 1).codePoints().toArray();
+        /*цикл для получение подстрок, которые делятся на левую и правую части,
+        передаем left и right в метод @decryptText(left, right), который вернет нам объедененный массив из расшифрованных left и right*/
+        for (int endIndex = RESHUFFLE.length * 2 - 1; endIndex < cipherText.length(); endIndex += RESHUFFLE.length * 2) {
+            int[] left = cipherText.substring(beginIndex, beginIndex + RESHUFFLE.length).chars().toArray();
+            int[] right = cipherText.substring(beginIndex + RESHUFFLE.length, endIndex + 1).chars().toArray();
             Arrays.stream(decryptText(left, right)).forEach(value -> sb.append((char) value));
-            beginIndex = i + 1;
+            beginIndex = endIndex + 1;
         }
         return sb.toString().trim();
     }
 
+    /*@decryptText(int[], int[]) получает две части зашифрованной строки в кодовом эквиваленте, и инверсированно
+    с шафрованием дешифрует их затем расшифрованные массивы left и right объеденяются в один массив и возвращаются */
     private int[] decryptText(int[] left, int[] right) {
         for (int i = KEYS.length; i > 0; i--) {
             int[] temp = right;
             right = left;
-            left = new int[]{0, 0, 0, 0};
+            left = temp;
             for (int j = 0; j < left.length; j++) {
-                left[j] = temp[j] ^ secretFunc(KEYS[i -1], right[RESHUFFLE[j] - 1]);
+                left[j] = temp[j] ^ secretFunc(KEYS[i - 1], right[RESHUFFLE[j] - 1]);
             }
         }
-        int[] decryptedPart = new int[left.length * 2];
-        System.arraycopy(left, 0, decryptedPart, 0, 4);
-        System.arraycopy(right, 0, decryptedPart, 4, 4);
-        return decryptedPart;
-    }
-
-    //    (keys[i - 1] * right[reshuffle[j] - 1]) % 65536
-    private int secretFunc(int key, int value) {
-        return (key * value) % ALPHABET_SIZE;
+        return Stream.concat(Arrays.stream(left).boxed(), Arrays.stream(right).boxed())
+                .mapToInt(i -> i).toArray();
     }
 }
-
-/*int[] left = decryptText(cipherText.substring(0, 4).codePoints().toArray(), cipherText.substring(4, 8).codePoints().toArray());
-        int[] right = decryptText(cipherText.substring(8, 12).codePoints().toArray(), cipherText.substring(12).codePoints().toArray());
-        StringBuilder sb = new StringBuilder();
-        Arrays.stream(left).forEach(value -> sb.append((char) value));
-        Arrays.stream(right).forEach(value -> sb.append((char) value));
-        return sb.toString();*/
