@@ -1,12 +1,19 @@
 import java.util.Arrays;
 
+/**
+ * Класс зашифрованного текста с возможнностью дешифрования
+ */
 public class CipherText implements FeistelCipher {
     private final String cipherText;
 
     public CipherText(String cipherText) {
         this.cipherText = cipherText;
     }
-/*@decryptText() */
+
+    /**
+     *Дешифрует каждый блок из {@link FeistelCipher#RESHUFFLE} * 2 символов в строке по порядку.
+     *@return зашифрованную строку
+     */
     public String decryptText() {
         StringBuilder sb = new StringBuilder();
         int beginIndex = 0;
@@ -19,6 +26,12 @@ public class CipherText implements FeistelCipher {
         return sb.toString().trim();
     }
 
+    /**
+     *Функция дешифрования по алгоритму Фейстеля
+     * @param left зашифрованный массив кодированных символов левой части блока
+     * @param right зашифрованный массив кодированных символов правой части блока
+     * @return массив расшифрованных символов из левой и правой части блока
+     */
     private int[] decryptText(int[] left, int[] right) {
         for (int i = KEYS.length; i > 0; i--) {
             int[] temp = right;
@@ -33,16 +46,4 @@ public class CipherText implements FeistelCipher {
         System.arraycopy(right, 0, decryptedPart, 4, 4);
         return decryptedPart;
     }
-
-    //    (keys[i - 1] * right[reshuffle[j] - 1]) % 65536
-    private int secretFunc(int key, int value) {
-        return (key * value) % ALPHABET_SIZE;
-    }
 }
-
-/*int[] left = decryptText(cipherText.substring(0, 4).codePoints().toArray(), cipherText.substring(4, 8).codePoints().toArray());
-        int[] right = decryptText(cipherText.substring(8, 12).codePoints().toArray(), cipherText.substring(12).codePoints().toArray());
-        StringBuilder sb = new StringBuilder();
-        Arrays.stream(left).forEach(value -> sb.append((char) value));
-        Arrays.stream(right).forEach(value -> sb.append((char) value));
-        return sb.toString();*/

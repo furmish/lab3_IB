@@ -1,16 +1,21 @@
 import java.util.Arrays;
 
+/**
+ * Класс открытого текста с возможностью шифрования
+ */
 public class PlainText implements FeistelCipher {
     private String plainText;
 
-
+    /**Конструктор - создание нового объекта
+     * */
     public PlainText(String plainText) {
         this.plainText = plainText;
     }
-/*@encryptText() шифрует каждый блок из n символов в строке по порядку, где n - количество перестановок * 2 */
+/**Шифрует каждый блок из {@link FeistelCipher#RESHUFFLE} * 2 символов в строке по порядку.
+ * Если длина открытого текста не делится на блоки одинакоговой длинны,
+ * то выполняется {@link #addSpaces()}
+ * @return зашифрованную строку*/
     public String encryptText() {
-        /*проверяем длину открытого текста. Если она не делится на блоки одинакоговой длинны,
-        * то добавляем пробелы до того момента, пока не выполнится условие*/
         if (plainText.length() % (RESHUFFLE.length * 2) != 0){
             addSpaces();
         }
@@ -26,8 +31,12 @@ public class PlainText implements FeistelCipher {
         }
         return sb.toString();
     }
-/*@encryptText(int[], int[]) получает две части строки в кодовом эквиваленте, и по алгоритму Фейстеля шифрует их,
-* затем зашифрованные массивы left и right помещаются в массив encryptedPart, который и возвращает этот метод. */
+
+    /** Функция шифрования по алгоритму Фейстеля
+     * @param left массив кодированных символов левой части блока
+     * @param right массив кодированных символов правой части блока
+     * @return массив зашифрованных символов из левой и правой части блока
+     */
     private int[] encryptText(int[] left, int[] right) {
         for (int key : KEYS) {
             int[] temp = left;
@@ -43,12 +52,17 @@ public class PlainText implements FeistelCipher {
         return encryptedPart;
     }
 
-    /*функция для шифрования*/
-    private int secretFunc(int key, int value) {
-        return (key * value) % ALPHABET_SIZE;
-    }
-    /*метод, который добавляет недостающее кол-во символов, для корректной работы
-    * алгоритма, при дешифровке эти символы удалятся*/
+
+    /**
+     * Метод, который добавляет недостающее кол-во символов, для корректной работы алгоритма, при дешифровке эти символы удалятся
+     * <p>
+     *Пример:<p>
+     *<blockquote><pre>
+     *"это не понадобится".length() == 18
+     * после выполнения метода будет выглядеть так:
+     *"это не понадобится      ".length() == 24
+     * </pre><blockquote>
+     */
     private void addSpaces () {
         int startPlainTextLength = plainText.length();
         int neededPlainTextLength = RESHUFFLE.length * 2 * (startPlainTextLength / (RESHUFFLE.length * 2) + 1);
@@ -57,12 +71,3 @@ public class PlainText implements FeistelCipher {
         }
     }
 }
-
-/* public String encryptText() {
-        int[] left = encryptText(plainText.substring(0, 4).codePoints().toArray(), plainText.substring(4, 8).codePoints().toArray());
-        int[] right = encryptText(plainText.substring(8, 12).codePoints().toArray(), plainText.substring(12).codePoints().toArray());
-        StringBuilder sb = new StringBuilder();
-        Arrays.stream(left).forEach(value -> sb.append((char) value));
-        Arrays.stream(right).forEach(value -> sb.append((char) value));
-        return sb.toString();
-    }*/
