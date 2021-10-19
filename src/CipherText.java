@@ -3,7 +3,7 @@ import java.util.Arrays;
 /**
  * Класс зашифрованного текста с возможнностью дешифрования
  */
-public class CipherText implements FeistelCipher {
+public class CipherText extends FeistelCipher {
     private final String cipherText;
 
     public CipherText(String cipherText) {
@@ -33,17 +33,17 @@ public class CipherText implements FeistelCipher {
      * @return массив расшифрованных символов из левой и правой части блока
      */
     private int[] decryptText(int[] left, int[] right) {
-        for (int i = KEYS.length; i > 0; i--) {
+        for (int i = KEYS.length - 1; i > -1; i--) {
             int[] temp = right;
             right = left;
-            left = new int[]{0, 0, 0, 0};
+            left = temp;
             for (int j = 0; j < left.length; j++) {
-                left[j] = temp[j] ^ secretFunc(KEYS[i -1], right[RESHUFFLE[j] - 1]);
+                left[j] = temp[j] ^ secretFunc(KEYS[i], right[RESHUFFLE[j] - 1]);
             }
         }
         int[] decryptedPart = new int[left.length * 2];
-        System.arraycopy(left, 0, decryptedPart, 0, 4);
-        System.arraycopy(right, 0, decryptedPart, 4, 4);
+        System.arraycopy(left, 0, decryptedPart, 0, RESHUFFLE.length);
+        System.arraycopy(right, 0, decryptedPart, RESHUFFLE.length, RESHUFFLE.length);
         return decryptedPart;
     }
 }

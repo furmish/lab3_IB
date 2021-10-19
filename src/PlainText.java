@@ -3,7 +3,7 @@ import java.util.Arrays;
 /**
  * Класс открытого текста с возможностью шифрования
  */
-public class PlainText implements FeistelCipher {
+public class PlainText extends FeistelCipher {
     private String plainText;
 
     /**Конструктор - создание нового объекта
@@ -41,14 +41,14 @@ public class PlainText implements FeistelCipher {
         for (int key : KEYS) {
             int[] temp = left;
             left = right;
-            right = new int[]{0, 0, 0, 0};
+            right = temp;
             for (int j = 0; j < left.length; j++) {
                 right[j] = temp[j] ^ secretFunc(key, left[RESHUFFLE[j] - 1]);
             }
         }
         int[] encryptedPart = new int[left.length * 2];
-        System.arraycopy(left, 0, encryptedPart, 0, 4);
-        System.arraycopy(right, 0, encryptedPart, 4, 4);
+        System.arraycopy(left, 0, encryptedPart, 0, RESHUFFLE.length);
+        System.arraycopy(right, 0, encryptedPart, RESHUFFLE.length, RESHUFFLE.length);
         return encryptedPart;
     }
 
