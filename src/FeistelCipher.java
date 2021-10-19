@@ -8,8 +8,9 @@
  * И общую функцию для шифрования и дешифрования {@link #secretFunc(int, int)}
  */
 public abstract class FeistelCipher {
-    public static final int[] RESHUFFLE = new int[]{2, 1, 4, 3};
-    public static final int[] KEYS = new int[]{456, 123, 1053};
+    public static final int[] RESHUFFLE = new int[]{3, 1, 2, 4};
+    public static final int BLOCK_SIZE = RESHUFFLE.length * 2;
+    public static final int[] KEYS = new int[]{2201, 1054, 3245};
     public static final int ALPHABET_SIZE = 65536;
 
     /**
