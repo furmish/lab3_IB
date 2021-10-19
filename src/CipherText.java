@@ -11,24 +11,28 @@ public class CipherText extends FeistelCipher {
     }
 
     /**
-     *Дешифрует каждый блок из {@link FeistelCipher#RESHUFFLE} * 2 символов в строке по порядку.
-     *@return зашифрованную строку
+     * Дешифрует каждый блок из {@link #BLOCK_SIZE} символов в строке по порядку.
+     *
+     * @return зашифрованную строку
      */
     public String decryptText() {
         StringBuilder sb = new StringBuilder();
         int beginIndex = 0;
-        for (int i = RESHUFFLE.length * 2 - 1; i < cipherText.length(); i += RESHUFFLE.length * 2) {
-            int[] left = cipherText.substring(beginIndex, beginIndex + RESHUFFLE.length).codePoints().toArray();
-            int[] right = cipherText.substring(beginIndex + RESHUFFLE.length, i + 1).codePoints().toArray();
+        int endIndex = beginIndex + BLOCK_SIZE / 2;
+        for (int i = BLOCK_SIZE - 1; i < cipherText.length(); i += BLOCK_SIZE) {
+            int[] left = cipherText.substring(beginIndex, endIndex).codePoints().toArray();
+            int[] right = cipherText.substring(endIndex, i + 1).codePoints().toArray();
             Arrays.stream(decryptText(left, right)).forEach(value -> sb.append((char) value));
             beginIndex = i + 1;
+            endIndex = beginIndex + BLOCK_SIZE / 2;
         }
         return sb.toString().trim();
     }
 
     /**
-     *Функция дешифрования по алгоритму Фейстеля
-     * @param left зашифрованный массив кодированных символов левой части блока
+     * Функция дешифрования по алгоритму Фейстеля
+     *
+     * @param left  зашифрованный массив кодированных символов левой части блока
      * @param right зашифрованный массив кодированных символов правой части блока
      * @return массив расшифрованных символов из левой и правой части блока
      */
@@ -41,9 +45,9 @@ public class CipherText extends FeistelCipher {
                 left[j] = temp[j] ^ secretFunc(KEYS[i], right[RESHUFFLE[j] - 1]);
             }
         }
-        int[] decryptedPart = new int[left.length * 2];
-        System.arraycopy(left, 0, decryptedPart, 0, RESHUFFLE.length);
-        System.arraycopy(right, 0, decryptedPart, RESHUFFLE.length, RESHUFFLE.length);
+        int[] decryptedPart = new int[BLOCK_SIZE];
+        System.arraycopy(left, 0, decryptedPart, 0, BLOCK_SIZE/2);
+        System.arraycopy(right, 0, decryptedPart, BLOCK_SIZE/2, BLOCK_SIZE/2);
         return decryptedPart;
     }
 }
