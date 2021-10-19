@@ -5,8 +5,8 @@ public class Main {
         System.out.println("Введите строку для шифрования:");
         Scanner sc = new Scanner(System.in);
         PlainText plainText = new PlainText(sc.nextLine());
-        CipherText cipherText = new CipherText(plainText.encryptText());
         System.out.println("Ваша зашифрованная строка:\n" + plainText.encryptText());
+        CipherText cipherText = new CipherText(plainText.encryptText());
         System.out.println("Расшифрованная строка:");
         System.out.println(cipherText.decryptText());
     }
